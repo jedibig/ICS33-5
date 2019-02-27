@@ -12,11 +12,11 @@ from random import random
 
 class Floater(Prey): 
     def __init__(self, x, y):
-        _image = PhotoImage(file='ufo.gif')
-        Prey.__init__(self, x, y, graphic_file.width(), graphic_file.height(), 0, 5)
+        self._image = PhotoImage(file='ufo.gif')
+        Prey.__init__(self, x, y, self._image.width(), self._image.height(), 0, 5)
         self.randomize_angle()
 
-    def update():
+    def update(self,model):
         if random() <= 0.3:
             self.set_velocity(min(7, max(3, self._speed + random()-0.5)), self._angle + random()-0.5 )
         self.move()
