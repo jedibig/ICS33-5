@@ -11,4 +11,15 @@ from random import random
 
 
 class Floater(Prey): 
-    pass
+    radius = speed = 5
+    def __init__():
+        Prey.__init__(self,x,y,self.radius,self.radius,0,self.speed)
+        self.randomize_angle()
+
+    def update():
+        self.move()
+
+    def display():
+        x,y = self.get_location()
+        blue = '#0000FF'
+        canvas.create_oval(x-self.radius, y-self.radius, x+self.radius, y+self.radius,fill=blue)
