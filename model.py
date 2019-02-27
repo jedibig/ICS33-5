@@ -1,7 +1,7 @@
 import controller, sys
 import model   # Pass a reference to model to each update call in update_all
 
-Use the reference to this module to pass it to update methods
+# Use the reference to this module to pass it to update methods
 
 from ball      import Ball
 from floater   import Floater
@@ -9,10 +9,12 @@ from blackhole import Black_Hole
 from pulsator  import Pulsator
 from hunter    import Hunter
 
-
 # Global variables: declare them global in functions that assign to them: e.g., ... = or +=
-
-
+running     = False
+one_cycle   = False
+cycle_count = 0
+objects      = set()
+selected_object = 'Ball'
 
 #return a 2-tuple of the width and height of the canvas (defined in the controller)
 def world():
@@ -20,49 +22,62 @@ def world():
 
 #reset all module variables to represent an empty/stopped simulation
 def reset ():
-    pass
+    global running,cycle_count,objects, one_cycle
+    running     = False
+    cycle_count = 0
+    one_cycle   = False
+    objects       = set()
 
 
 #start running the simulation
 def start ():
-    pass
+    global running
+    running = True
 
 
 #stop running the simulation (freezing it)
 def stop ():
-    pass
+    global running
+    running = False
 
 
-#tep just one update in the simulation
+#step just one update in the simulation
 def step ():
-    pass
-
+    global running, one_cycle
+    one_cycle = True
+    running = True
 
 #remember the kind of object to add to the simulation when an (x,y) coordinate in the canvas
 #  is clicked next (or remember to remove an object by such a click)   
 def select_object(kind):
-    pass
+    global selected_object
+    selected_object = kind
 
 
 #add the kind of remembered object to the simulation (or remove all objects that contain the
 #  clicked (x,y) coordinate
 def mouse_click(x,y):
-    pass
+    global objects,selected_object
+    if selected_object == 'Remove':
+        for each in find(lambda o: o.contains((x,y))):
+            remove(each)
+    else:
+        add(eval(f'{selected_object}({x},{y})'))
 
 
 #add simulton s to the simulation
 def add(s):
-    pass
+    objects.add(s)
     
 
 # remove simulton s from the simulation    
 def remove(s):
-    pass
+    objects.discard(s)
     
 
 #find/return a set of simultons that each satisfy predicate p    
 def find(p):
-    pass
+    return{obj for obj in objects if p(obj)}
 
 
 #call update for each simulton in the simulation (passing model as an argument)
@@ -71,7 +86,16 @@ def find(p):
 #  right thing for itself, without this function knowing what kinds of
 #  simultons are in the simulation
 def update_all():
-    pass
+    global cycle_count, one_cycle
+
+    if running:
+        cycle_count += 1
+        for o in objects:
+            o.update(model)
+
+        if one_cycle:
+            stop()
+            one_cycle = False
 
 #delete from the canvas each simulton being simulated; afterward call display on each
 #  simulton being simulated to add it back to the canvas, possibly in a new location, to
@@ -81,4 +105,10 @@ def update_all():
 #  right thing for itself, without this function knowing what kinds of
 #  simultons are in the simulation
 def display_all():
-    pass
+    for o in controller.the_canvas.find_all():
+        controller.the_canvas.delete(o)
+    
+    for o in objects:
+        o.display(controller.the_canvas)
+    
+    controller.the_progress.config(text=str(len(objects))+" balls/"+str(cycle_count)+" cycles")
